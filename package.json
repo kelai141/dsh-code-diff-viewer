@@ -1,0 +1,44 @@
+{
+  "name": "dsh-code-diff-viewer",
+  "version": "1.0.0",
+  "description": "Collapsible before/after code-diff cards for edit/write tool calls in DeepSeek Harness (dsh), with absolute line numbers. Pure visual, injected into the conversation flow.",
+  "type": "module",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kelai141/dsh-code-diff-viewer.git"
+  },
+  "homepage": "https://github.com/kelai141/dsh-code-diff-viewer",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "cordis",
+    "plugin",
+    "diff",
+    "code-viewer"
+  ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-tool"
+      ],
+      "immediately": true
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
+  "license": "MIT"
+}

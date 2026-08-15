@@ -1,0 +1,6 @@
+# dsh-code-diff-viewer bundle patch: mounts the plugin into a profile layer stack.
+# Applied as a bundle layer (package.json dsh.bundle.patch); the user's own
+# profile cordis.patch.yml may override config by the same id.
+- insert:
+    - id: code-diff-viewer
+      name: 'dsh-code-diff-viewer'
