@@ -1,12 +1,14 @@
 # dsh-code-diff-viewer
 
-让 DeepSeek Harness（dsh）Web 界面的 `edit` / `write` 工具调用，以**可折叠的「修改前 / 修改后」左右对照代码面板**呈现——带语法高亮、绝对行号、变更行红/绿底色，纯视觉注入对话流，不新建模式、不落盘任何文件。
+让 DeepSeek Harness（dsh）Web 界面的 `edit` / `write` / `apply_patch` 工具调用，以**可折叠的「修改前 / 修改后」左右对照代码面板**呈现——带语法高亮、绝对行号、变更行红/绿底色，纯视觉注入对话流，不新建模式、不落盘任何文件。
 
 > **母仓库声明**：本项目是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（`dsh`，`@deepseek-ai/dsh`）的**第三方插件**，通过 dsh 的 profile bundle 机制（`dsh.bundle.patch` + `dsh.client` 双面插件）扩展其 Web 界面，并非 dsh 官方组件。
 
 ## 特性
 
 - **左右对照**：同时有增有删 → 双列「修改前 / 修改后」；纯新增 → 单列绿色「新增」；纯删除 → 单列红色「删除」
+- **Codex/GPT patch**：兼容 `apply_patch`、`apply-patch` 与 `applypatch`，接管其标准 `card: 'diff'` 结果
+- **大文件窗口化**：完整文件 before/after 只显示每处修改前后 3 行，未变更部分折叠；使用文件绝对行号，避免大文件渲染和错误定位
 - **绝对行号**：原厂 diff hunk 自带 3 行上下文，本插件通过 Host 端 `/cdv-locate` 读取文件反推每个 hunk 在文件中的真实起始行，文件中部（如第 20~30 行）的修改也能精确定位
 - **语法高亮**：内置轻量分词器（JS/TS、Python、CSS、HTML、Shell、JSON、YAML 等），关键字蓝、字符串绿、数字浅蓝、类型紫、属性白
 - **可折叠**：点击卡片头部展开/收起；最新一次修改自动展开，旧卡片保持收起
@@ -28,7 +30,7 @@
 
 ## 安装
 
-要求：已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)（`dsh` CLI）与 `pnpm`，使用 `web` profile。
+要求：已安装 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) `0.1.0-rc.7` 或兼容后续版本（`dsh` CLI）与 `pnpm`，使用 `web` profile。
 
 ### 方式一：从 GitHub 安装（推荐）
 
@@ -88,10 +90,10 @@ dsh plugin --profile web remove dsh-code-diff-viewer
 
 ## 工作原理
 
-1. dsh 的 `edit` / `write` 工具在结果中携带真实 diff hunk（`oldText` / `newText`，jsdiff `structuredPatch(context: 3)`，每个 hunk 带 3 行上下文）
+1. dsh 的 `edit` / `write` 工具在结果中携带真实 diff hunk（`oldText` / `newText`，jsdiff `structuredPatch(context: 3)`，每个 hunk 带 3 行上下文）；Codex/GPT 适配层的 `apply_patch` 可能回传完整文件 before/after
 2. 客户端插件读取工具调用块（`ToolCallBlock`）的 `callView` / `resultView`，取 `card: 'diff'` 的 `diffs`
-3. 行级 LCS 对齐两侧内容，纯增/纯删/混合自动选择单列或双列
-4. 通过 Host 半的 `/cdv-locate` 在磁盘文件（修改后状态）中反推 hunk 绝对起始行，渲染真实行号
+3. 行级 LCS 对齐两侧内容，纯增/纯删/混合自动选择单列或双列；完整文件 diff 仅渲染变更窗口并折叠远处未变更行
+4. 普通 hunk 通过 Host 半的 `/cdv-locate` 在磁盘文件（修改后状态）中反推绝对起始行；完整 `apply_patch` diff 直接使用其原始绝对行号
 5. 轻量正则分词器做语法高亮；卡片头部可折叠，最新调用自动展开
 
 ## 仓库结构
@@ -107,8 +109,8 @@ dsh-code-diff-viewer/
 
 ## 兼容性
 
-- dsh（DeepSeek Harness）`web` profile，Node.js ≥ 22
-- 无第三方运行时依赖；客户端仅依赖 dsh 自带的 `react` seed 模块与 `slots` 服务
+- dsh（DeepSeek Harness）`web` profile：`0.1.0-rc.7`（或兼容的后续版本），Node.js ≥ 22
+- 运行时 peer：`@deepseek-ai/cordis` ^4.0.1、RC7 `dsh-client-runtime` / `dsh-client-ui-slots` / `dsh-client-ui-tool` / `dsh-host-webserver`，以及 React 18
 
 ## License
 
