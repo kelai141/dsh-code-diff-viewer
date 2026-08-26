@@ -1,7 +1,7 @@
 {
   "name": "dsh-code-diff-viewer",
-  "version": "1.0.0",
-  "description": "Collapsible before/after code-diff cards for edit/write tool calls in DeepSeek Harness (dsh), with absolute line numbers. Pure visual, injected into the conversation flow.",
+  "version": "1.1.0",
+  "description": "Collapsible before/after code-diff cards for edit, write, and apply_patch tool calls in DeepSeek Harness (dsh), with absolute line numbers. Pure visual, injected into the conversation flow.",
   "type": "module",
   "main": "lib/index.js",
   "repository": {
@@ -23,6 +23,14 @@
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.7",
+    "@deepseek-ai/dsh-client-ui-slots": "^0.1.0-rc.7",
+    "@deepseek-ai/dsh-client-ui-tool": "^0.1.0-rc.7",
+    "@deepseek-ai/dsh-host-webserver": "^0.1.0-rc.7",
+    "react": "^18.2.0"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
@@ -31,6 +39,7 @@
       "platform": "web",
       "inject": [
         "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-slots",
         "@deepseek-ai/dsh-client-ui-tool"
       ],
       "immediately": true
